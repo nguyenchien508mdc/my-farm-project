@@ -1,0 +1,9 @@
+{# templates/blank_public.html #}
+{% extends "public_layout.html" %}
+{% load static %}
+{% block content %}
+  <div id="root"></div>
+{% endblock %}
+{% block extra_js %}
+    <script type="module" src="{% static 'js/routes.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,21 @@
+<div class="card">
+    <div class="card-header">
+        <h5>Thao tác phê duyệt</h5>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{% url 'approval:request-approve' pk=request.id %}">
+            {% csrf_token %}
+            {{ form.notes }}
+            <div class="d-grid gap-2 mt-3">
+                <button type="submit" name="action" value="approve" 
+                    class="btn btn-success">
+                    <i class="fas fa-check"></i> Phê duyệt
+                </button>
+                <button type="submit" name="action" value="reject" 
+                    class="btn btn-danger">
+                    <i class="fas fa-times"></i> Từ chối
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+{% extends "approval/base_approval.html" %}
+
+{% block approval_title %}Chi tiết yêu cầu #{{ request.id }}{% endblock %}
+
+{% block approval_content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Thông tin yêu cầu</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Người yêu cầu:</dt>
+                    <dd class="col-sm-9">{{ request.requester.get_full_name }}</dd>
+                    
+                    <dt class="col-sm-3">Người phê duyệt:</dt>
+                    <dd class="col-sm-9">{{ request.approver.get_full_name }}</dd>
+                    
+                    <dt class="col-sm-3">Trạng thái:</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge bg-{{ request.status|status_badge }}">
+                            {{ request.get_status_display }}
+                        </span>
+                    </dd>
+                    
+                    <dt class="col-sm-3">Đối tượng:</dt>
+                    <dd class="col-sm-9">{{ request.related_object }}</dd>
+                    
+                    <dt class="col-sm-3">Ghi chú:</dt>
+                    <dd class="col-sm-9">{{ request.notes|linebreaks }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        {% if can_approve and request.status == 'pending' %}
+            {% include "approval/includes/approval_actions.html" %}
+        {% endif %}
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Lịch sử phê duyệt</h5>
+            </div>
+            <div class="card-body">
+                {% if request.approval_date %}
+                    <p>Phê duyệt vào: {{ request.approval_date }}</p>
+                    <p>Ghi chú phản hồi: {{ request.response_notes|default:"Không có" }}</p>
+                {% else %}
+                    <p>Chưa được xử lý</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

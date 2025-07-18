@@ -1,0 +1,67 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: vi\n"
+
+# ==================== Checkout Page ====================
+
+msgid "Thanh toán"
+msgstr "Thanh toán"
+
+msgid "Giỏ hàng của bạn"
+msgstr "Giỏ hàng của bạn"
+
+msgid "Sản phẩm"
+msgstr "Sản phẩm"
+
+msgid "Số lượng"
+msgstr "Số lượng"
+
+msgid "Giá"
+msgstr "Giá"
+
+msgid "Tổng"
+msgstr "Tổng"
+
+msgid "Tổng giỏ hàng:"
+msgstr "Tổng giỏ hàng:"
+
+msgid "Thông tin thanh toán"
+msgstr "Thông tin thanh toán"
+
+msgid "Hoàn tất thanh toán"
+msgstr "Hoàn tất thanh toán"
+
+# ==================== Order Status ====================
+
+msgid "Đang chờ"
+msgstr "Đang chờ"
+
+msgid "Đã hoàn tất"
+msgstr "Đã hoàn tất"
+
+msgid "Đã hủy"
+msgstr "Đã hủy"
+
+msgid "Trạng thái không hợp lệ"
+msgstr "Trạng thái không hợp lệ"
+
+msgid "Địa chỉ giao hàng"
+msgstr "Địa chỉ giao hàng"
+
+msgid "Số điện thoại"
+msgstr "Số điện thoại"
+
+# ==================== Trang tĩnh ====================
+
+msgid "Về chúng tôi"
+msgstr "Về chúng tôi"
+
+msgid "Liên hệ"
+msgstr "Liên hệ"
+
+msgid "Câu hỏi thường gặp"
+msgstr "Câu hỏi thường gặp"
+
+msgid "Cảm ơn bạn"
+msgstr "Cảm ơn bạn"

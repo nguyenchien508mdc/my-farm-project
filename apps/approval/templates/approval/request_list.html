@@ -1,0 +1,33 @@
+{% extends "approval/base_approval.html" %}
+
+{% block approval_title %}Danh sách yêu cầu phê duyệt{% endblock %}
+
+{% block approval_content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <h5>Tất cả yêu cầu</h5>
+                <a href="?show_my_requests=1" class="btn btn-sm btn-outline-primary">
+                    Xem yêu cầu của tôi
+                </a>
+            </div>
+            <div class="card-body">
+                {% if requests %}
+                    <div class="list-group">
+                        {% for request in requests %}
+                            {% include "approval/includes/request_card.html" %}
+                        {% endfor %}
+                    </div>
+                    
+                    {% include "includes/pagination.html" %}
+                {% else %}
+                    <div class="alert alert-info">
+                        Không có yêu cầu phê duyệt nào
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

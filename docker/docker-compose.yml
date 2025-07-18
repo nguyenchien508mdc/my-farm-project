@@ -1,0 +1,36 @@
+# docker\docker-compose.yml
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: myfarm_web
+    volumes:
+      - .:/app:delegated  # tăng hiệu năng volume trên Mac/Win
+      - static_volume:/app/static
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+      - .env.dev  # hoặc .env.production 
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    container_name: myfarm_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: ${DB_NAME:-myfarm}
+      POSTGRES_USER: ${DB_USER:-myfarm_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-myfarm_pass}
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

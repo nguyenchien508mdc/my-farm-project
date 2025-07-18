@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Chi tiết cây trồng: {{ crop.crop_type.name }}</h2>
+
+<ul class="list-group mb-3">
+  <li class="list-group-item"><strong>Giống:</strong> {{ crop.variety }}</li>
+  <li class="list-group-item"><strong>Trạng thái:</strong> {{ crop.get_status_display }}</li>
+  <li class="list-group-item"><strong>Ngày trồng:</strong> {{ crop.planting_date }}</li>
+  <li class="list-group-item"><strong>Ngày thu hoạch:</strong> {{ crop.harvest_date }}</li>
+  <li class="list-group-item"><strong>Diện tích:</strong> {{ crop.area }} ha</li>
+  <li class="list-group-item"><strong>Năng suất dự kiến:</strong> {{ crop.expected_yield }} tấn/ha</li>
+  <li class="list-group-item"><strong>Năng suất thực tế:</strong> {{ crop.actual_yield }} tấn/ha</li>
+  <li class="list-group-item"><strong>Ghi chú:</strong> {{ crop.notes }}</li>
+</ul>
+
+<a href="{% url 'crop:update' crop.id %}" class="btn btn-primary">Chỉnh sửa</a>
+<a href="{% url 'crop:list' %}" class="btn btn-secondary">Quay lại danh sách</a>
+{% endblock %}
