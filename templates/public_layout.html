@@ -9,7 +9,8 @@
 {% endblock %}
 
 {% block body %}
-{% block content %}{% endblock %}
+    <div id="alert-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1060; max-width: 360px;"></div>
+    {% block content %}{% endblock %}
 
 <script src="{% static 'jquery-3.7.1.min.js' %}"></script>
 <script src="{% static 'bootstrap-5.3.6-dist/js/bootstrap.bundle.min.js' %}"></script>

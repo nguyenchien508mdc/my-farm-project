@@ -1,9 +1,9 @@
 // static/js/auth/login.js
 
-export function initLogin() {
-  const root = document.getElementById('root');
+import { clearToken, setAccessToken } from '/static/js/auth.js';
 
-  // Tạo form login động
+export async function initLogin() {
+
   root.innerHTML = `
     <div class="container mt-5" style="max-width: 400px;">
       <h2 class="mb-4 text-center">Đăng nhập</h2>
@@ -27,7 +27,7 @@ export function initLogin() {
   `;
 
   const urlParams = new URLSearchParams(window.location.search);
-  const nextPage = urlParams.get('next') || '/'; // Mặc định là trang chủ
+  const nextPage = urlParams.get('next') || '/';
 
   const form = document.getElementById('login-form');
   const errorBox = document.getElementById('error-message');
@@ -47,27 +47,38 @@ export function initLogin() {
     }
 
     try {
-      const response = await fetch('/api/token/', {
+      const response = await fetch('/api/core/token/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ username, password }),
       });
 
-      const data = await response.json();
+      let data = {};
+      try {
+        data = await response.json();
+      } catch {
+        // Không nhận được JSON, có thể là lỗi server
+      }
 
       if (!response.ok) {
         throw new Error(data.detail || 'Đăng nhập thất bại');
       }
-      localStorage.setItem('access_token', data.access);
-      localStorage.setItem('refresh_token', data.refresh);
 
-      setTimeout(() => {
-        window.location.href = nextPage;
-      }, 100);
+      if (!data.access) {
+        throw new Error('Không nhận được access token từ server');
+      }
+
+      clearToken();
+      setAccessToken(data.access);
+
+      window.location.href = nextPage;
+
     } catch (error) {
       errorBox.textContent = error.message;
       errorBox.classList.remove('d-none');
     }
   });
-};
+}
+
 

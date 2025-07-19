@@ -1,6 +1,5 @@
 // apps\core\static\js\auth\register.js
-export function initRegister() {
-  const root = document.getElementById('root');
+export async function initRegister() {
 
   root.innerHTML = `
     <div class="container mt-5" style="max-width: 400px;">

@@ -13,7 +13,7 @@ class FarmTypeSerializer(serializers.Serializer):
 class SimpleFarmSerializer(serializers.ModelSerializer):
     class Meta:
         model = Farm
-        fields = ['id', 'name', 'slug']
+        fields = ['id', 'name', 'slug', 'location', 'area', 'farm_type',]
 
 # ✅ Serializer chính hiển thị thông tin chi tiết nông trại
 class FarmSerializer(serializers.ModelSerializer):
@@ -77,10 +77,14 @@ class FarmMembershipSerializer(serializers.ModelSerializer):
         return UserSerializer(obj.user).data
 
     def get_farm(self, obj):
+        farm = obj.farm
         return {
-            "id": obj.farm.id,
-            "name": obj.farm.name,
-            "slug": obj.farm.slug
+            "id": farm.id,
+            "name": farm.name,
+            "slug": farm.slug,
+            "location": farm.location if hasattr(farm, 'location') else None,
+            "area": farm.area if hasattr(farm, 'area') else None,
+            # thêm các trường khác nếu muốn
         }
 
 # ✅ Tạo/Cập nhật vai trò thành viên trong nông trại
@@ -107,7 +111,7 @@ class FarmDocumentTypeSerializer(serializers.Serializer):
 
 # ✅ Hiển thị tài liệu chi tiết
 class FarmDocumentSerializer(serializers.ModelSerializer):
-    farm = SimpleFarmSerializer(read_only=True)  # Dùng SimpleFarmSerializer để tránh vòng lặp
+    farm = SimpleFarmSerializer(read_only=True)
     document_type_display = serializers.CharField(source='get_document_type_display', read_only=True)
     file_url = serializers.SerializerMethodField()
 
@@ -121,7 +125,18 @@ class FarmDocumentSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at', 'file_url']
 
     def get_file_url(self, obj):
-        return obj.file.url if obj.file else None
+        import os
+        try:
+            if obj.file and hasattr(obj.file, 'url'):
+                path = obj.file.path
+                if os.path.exists(path):  # kiểm tra tồn tại thật
+                    return obj.file.url
+            
+        except Exception:
+            return None
+        return None
+
+
 
 # ✅ Tạo/Cập nhật tài liệu
 class FarmDocumentCreateUpdateSerializer(serializers.ModelSerializer):

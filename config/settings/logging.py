@@ -1,15 +1,10 @@
-# config\settings\logging.py
 import os
 from pathlib import Path
 
-# Gốc dự án
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
-# Thư mục chứa log
 LOG_DIR = BASE_DIR / 'logs'
 LOG_DIR.mkdir(exist_ok=True)
 
-# DEBUG được lấy từ môi trường hoặc mặc định là False
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 LOGGING = {
@@ -31,13 +26,12 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
+            'level': 'INFO',
         },
         'file_debug': {
             'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
+            'class': 'logging.FileHandler',  
             'filename': LOG_DIR / 'django_debug.log',
-            'maxBytes': 5 * 1024 * 1024,  # 5MB
-            'backupCount': 3,
             'formatter': 'verbose',
         },
         'file_error': {
@@ -49,14 +43,24 @@ LOGGING = {
     },
 
     'loggers': {
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'level': 'ERROR',  
+            'handlers': ['console'] if DEBUG else ['file_error'],
+            'propagate': False,
+        },
         'django': {
             'handlers': ['console', 'file_debug'] if DEBUG else ['file_error'],
             'level': 'DEBUG' if DEBUG else 'ERROR',
             'propagate': True,
         },
         'myfarm': {
-            'handlers': ['console', 'file_debug'],
-            'level': 'DEBUG',
+            'handlers': ['console', 'file_debug'] if DEBUG else ['file_error'],
+            'level': 'DEBUG' if DEBUG else 'ERROR',
             'propagate': False,
         },
     }

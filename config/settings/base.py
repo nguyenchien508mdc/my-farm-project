@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "django.contrib.humanize",
     "import_export",
+    'django_cleanup.apps.CleanupConfig',
 
     # Internal apps
     "apps.core",

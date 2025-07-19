@@ -1,5 +1,4 @@
-export function createHomePage() {
-    const root = document.getElementById('root');
+export async function createHomePage() {
 
     root.innerHTML = `
     <div class="container-fluid">

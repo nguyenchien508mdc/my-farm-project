@@ -1,7 +1,5 @@
 // apps\core\static\js\auth\password_reset.js
-export function initPasswordReset() {
-  const root = document.getElementById('root');
-
+export async function initPasswordReset() {
   root.innerHTML = `
     <div class="container mt-5" style="max-width: 400px;">
       <h2 class="mb-4 text-center">Quên mật khẩu</h2>

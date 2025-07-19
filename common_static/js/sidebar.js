@@ -1,34 +1,53 @@
 import { renderSidebar } from './sidebar_render.js';
-import { getAccessToken, parseJwt } from './auth.js';
+import { fetchWithAuth, clearToken, getAccessToken } from './auth.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const sidebarRoot = document.getElementById('sidebar-root');
   const sidebarWrapper = document.querySelector('.navigation-sidebar');
 
+  // Nếu không có token thì ẩn sidebar và return luôn
   const token = getAccessToken();
-
   if (!token) {
-    if (sidebarWrapper) {
-      sidebarWrapper.style.display = 'none'; 
-    }
+    if (sidebarWrapper) sidebarWrapper.style.display = 'none';
     return;
   }
 
-  try {
-    const payload = parseJwt(token);
-    const user = {
-      isAuthenticated: true,
-      username: payload.username || '',
-      role: payload.role || '',
-    };
+  // Hàm gọi API lấy thông tin user
+  async function fetchUser() {
+    try {
+      const response = await fetchWithAuth('/api/core/me', {
+        headers: { 'Content-Type': 'application/json' },
+      });
 
-    if (sidebarRoot) {
-      sidebarRoot.innerHTML = renderSidebar(user);
-    }
-  } catch (err) {
-    console.error('Không thể parse JWT:', err);
-    if (sidebarWrapper) {
-      sidebarWrapper.style.display = 'none';
+      if (!response || !response.ok) {
+        clearToken();
+        return { isAuthenticated: false };
+      }
+
+      const data = await response.json();
+      return {
+        isAuthenticated: true,
+        username: data.username,
+        role: data.role,
+      };
+    } catch (error) {
+      console.error('Lỗi khi lấy user:', error);
+      clearToken();
+      return { isAuthenticated: false };
     }
   }
+
+  const user = await fetchUser();
+
+  // Nếu không authenticated thì ẩn sidebar
+  if (!user.isAuthenticated) {
+    if (sidebarWrapper) sidebarWrapper.style.display = 'none';
+    return;
+  }
+
+  // Render sidebar với user info
+  if (sidebarRoot) {
+    sidebarRoot.innerHTML = renderSidebar(user);
+  }
+
 });

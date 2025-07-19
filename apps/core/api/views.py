@@ -1,10 +1,14 @@
 # apps/core/api_views.py
 
 from rest_framework import generics, permissions
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from ..serializers import UserCreateSerializer, UserSerializer, ChangePasswordSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
@@ -175,5 +179,50 @@ class ChangePasswordAPIView(APIView):
         user.set_password(new_password1)
         user.save()
         return Response({"detail": "Mật khẩu đã được thay đổi thành công."})
-    
 
+# ✅ API đăng nhập & set refresh token vào cookie
+class CustomTokenObtainPairView(TokenObtainPairView):
+    def finalize_response(self, request, response, *args, **kwargs):
+        # Lấy refresh token từ response data
+        refresh_token = response.data.get('refresh')
+
+        if refresh_token:
+            # Set cookie HttpOnly cho refresh token
+            response.set_cookie(
+                key='refresh_token',
+                value=refresh_token,
+                httponly=True,
+                secure=not settings.DEBUG,       # True nếu HTTPS, dev local thì False
+                samesite='Strict', # hoặc 'Lax' tuỳ app
+                max_age=7 * 24 * 60 * 60,  # 7 ngày
+                path='/api/core/token/refresh/',  # cookie chỉ gửi cho refresh endpoint
+            )
+            # Xoá refresh token trong response body để frontend không thấy
+            response.data.pop('refresh', None)
+
+        return super().finalize_response(request, response, *args, **kwargs)
+
+# ✅ API lấy refresh token
+class CustomTokenRefreshView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        # Lấy refresh token từ cookie HttpOnly thay vì body
+        refresh_token = request.COOKIES.get('refresh_token')
+
+        if not refresh_token:
+            return Response({'detail': 'Không có refresh token'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        serializer = self.get_serializer(data={'refresh': refresh_token})
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception:
+            return Response({'detail': 'Refresh token không hợp lệ hoặc hết hạn'}, status=status.HTTP_403_FORBIDDEN)
+
+        return Response(serializer.validated_data)
+
+# ✅ Đăng xuất
+@api_view(['POST'])
+def logout_view(request):
+    response = Response({'detail': 'Đăng xuất thành công'})
+    response.delete_cookie('refresh_token', path='/api/core/token/refresh/')
+    return response

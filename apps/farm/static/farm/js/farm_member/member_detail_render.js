@@ -1,51 +1,51 @@
-export function renderMemberDetail(data) {
+export function renderMemberDetail(memberData) {
   const {
-    role_display,
-    joined_date,
-    is_active,
-    can_approve,
-    user = {},
-    farms: rawFarms,
-    farm: currentFarmData
-  } = data;
+    role_display: memberRoleDisplay,
+    joined_date: memberJoinedDate,
+    is_active: memberIsActive,
+    can_approve: memberCanApprove,
+    user: userInfo = {},
+    farms: memberFarmListFromRoot,
+    farm: fallbackCurrentFarm
+  } = memberData;
 
-  // Lấy danh sách nông trại: Ưu tiên rawFarms, fallback về user.farms
-  const farmList = Array.isArray(rawFarms)
-    ? rawFarms
-    : (Array.isArray(user.farms) ? user.farms : []);
+  // Lấy danh sách nông trại mà thành viên tham gia:
+  const participatingFarms = Array.isArray(memberFarmListFromRoot)
+    ? memberFarmListFromRoot
+    : (Array.isArray(userInfo.farms) ? userInfo.farms : []);
 
-  // Ưu tiên user.current_farm, sau đó đến farm trong root
-  const currentFarm = user.current_farm || currentFarmData || null;
+  // Xác định nông trại hiện tại:
+  const currentFarm = userInfo.current_farm || fallbackCurrentFarm || null;
 
   return `
     <div class="container my-4" style="max-width: 900px;">
       <h5 class="border-bottom border-primary pb-2 mb-4 text-primary">Thông tin thành viên</h5>
       <div class="row mb-4">
-        <div class="col-md-6 mb-3"><p><strong>Vai trò trong nông trại:</strong> ${role_display || user.role_display || 'Chưa cập nhật'}</p></div>
-        <div class="col-md-6 mb-3"><p><strong>Ngày tham gia:</strong> ${joined_date || 'Chưa cập nhật'}</p></div>
-        <div class="col-md-6 mb-3"><p><strong>Trạng thái hoạt động:</strong> ${is_active ? "Hoạt động" : "Không hoạt động"}</p></div>
-        <div class="col-md-6 mb-3"><p><strong>Quyền duyệt:</strong> ${can_approve ? "Có" : "Không"}</p></div>
+        <div class="col-md-6 mb-3"><p><strong>Vai trò trong nông trại:</strong> ${memberRoleDisplay || userInfo.role_display || 'Chưa cập nhật'}</p></div>
+        <div class="col-md-6 mb-3"><p><strong>Ngày tham gia:</strong> ${memberJoinedDate || 'Chưa cập nhật'}</p></div>
+        <div class="col-md-6 mb-3"><p><strong>Trạng thái hoạt động:</strong> ${memberIsActive ? "Hoạt động" : "Không hoạt động"}</p></div>
+        <div class="col-md-6 mb-3"><p><strong>Quyền duyệt:</strong> ${memberCanApprove ? "Có" : "Không"}</p></div>
       </div>
 
       <hr>
 
       <h5 class="border-bottom border-primary pb-2 mb-4 text-primary">Thông tin người dùng</h5>
       <div class="row mb-4">
-        <div class="col-md-6 mb-3"><p><strong>Tên đăng nhập:</strong> ${user.username || 'Chưa cập nhật'}</p></div>
-        <div class="col-md-6 mb-3"><p><strong>Email:</strong> ${user.email || 'Chưa cập nhật'}</p></div>
-        <div class="col-md-6 mb-3"><p><strong>Họ tên:</strong> ${(user.first_name || '') + ' ' + (user.last_name || '')}</p></div>
-        <div class="col-md-6 mb-3"><p><strong>Số điện thoại:</strong> ${user.phone_number || "Chưa cập nhật"}</p></div>
-        <div class="col-md-6 mb-3"><p><strong>Địa chỉ:</strong> ${user.address || "Chưa cập nhật"}</p></div>
-        <div class="col-md-6 mb-3"><p><strong>Vai trò:</strong> ${user.role_display || user.role || 'Chưa cập nhật'}</p></div>
-        <div class="col-md-6 mb-3"><p><strong>Đã xác thực:</strong> ${user.is_verified ? "Có" : "Chưa"}</p></div>
-        <div class="col-md-6 mb-3"><p><strong>Ngày sinh:</strong> ${user.date_of_birth || "Chưa cập nhật"}</p></div>
-        <div class="col-md-6 mb-3"><p><strong>Ngày tham gia hệ thống:</strong> ${user.date_joined || 'Chưa cập nhật'}</p></div>
-        <div class="col-md-6 mb-3"><p><strong>Lần đăng nhập cuối:</strong> ${user.last_login || 'Chưa cập nhật'}</p></div>
+        <div class="col-md-6 mb-3"><p><strong>Tên đăng nhập:</strong> ${userInfo.username || 'Chưa cập nhật'}</p></div>
+        <div class="col-md-6 mb-3"><p><strong>Email:</strong> ${userInfo.email || 'Chưa cập nhật'}</p></div>
+        <div class="col-md-6 mb-3"><p><strong>Họ tên:</strong> ${(userInfo.first_name || '') + ' ' + (userInfo.last_name || '')}</p></div>
+        <div class="col-md-6 mb-3"><p><strong>Số điện thoại:</strong> ${userInfo.phone_number || "Chưa cập nhật"}</p></div>
+        <div class="col-md-6 mb-3"><p><strong>Địa chỉ:</strong> ${userInfo.address || "Chưa cập nhật"}</p></div>
+        <div class="col-md-6 mb-3"><p><strong>Vai trò:</strong> ${userInfo.role_display || userInfo.role || 'Chưa cập nhật'}</p></div>
+        <div class="col-md-6 mb-3"><p><strong>Đã xác thực:</strong> ${userInfo.is_verified ? "Có" : "Chưa"}</p></div>
+        <div class="col-md-6 mb-3"><p><strong>Ngày sinh:</strong> ${userInfo.date_of_birth || "Chưa cập nhật"}</p></div>
+        <div class="col-md-6 mb-3"><p><strong>Ngày tham gia hệ thống:</strong> ${userInfo.date_joined || 'Chưa cập nhật'}</p></div>
+        <div class="col-md-6 mb-3"><p><strong>Lần đăng nhập cuối:</strong> ${userInfo.last_login || 'Chưa cập nhật'}</p></div>
 
-        ${user.profile_picture ? `
+        ${userInfo.profile_picture ? `
         <div class="col-12 mb-3">
           <p><strong>Ảnh đại diện:</strong></p>
-          <img src="${user.profile_picture}" alt="Ảnh đại diện" class="img-thumbnail" style="max-width: 150px; max-height: 150px; object-fit: cover;">
+          <img src="${userInfo.profile_picture}" alt="Ảnh đại diện" class="img-thumbnail" style="max-width: 150px; max-height: 150px; object-fit: cover;">
         </div>` : ''
         }
       </div>
@@ -53,10 +53,10 @@ export function renderMemberDetail(data) {
       <hr>
 
       <h5 class="border-bottom border-primary pb-2 mb-4 text-primary">
-        Danh sách nông trại thành viên tham gia (${farmList.length})
+        Danh sách nông trại thành viên tham gia (${participatingFarms.length})
       </h5>
       <ul class="list-unstyled">
-        ${farmList.length ? farmList.map(farm => `
+        ${participatingFarms.length ? participatingFarms.map(farm => `
           <li class="bg-light p-3 rounded shadow-sm mb-3">
             <strong>${farm.name}</strong> (${farm.farm_type_display || 'Chưa cập nhật'})<br>
             Diện tích: ${farm.area ?? 'Chưa cập nhật'} ha &nbsp;&nbsp;|&nbsp;&nbsp;
@@ -76,9 +76,14 @@ export function renderMemberDetail(data) {
       <h5 class="border-bottom border-primary pb-2 mb-3 text-primary">Nông trại hiện tại:</h5>
       <p>${
         currentFarm
-          ? `${currentFarm.name} - ${currentFarm.location || 'Chưa cập nhật'}`
+          ? `${currentFarm.name || 'Chưa có tên'} - ${currentFarm.location || 'Chưa cập nhật địa điểm'}`
           : 'Chưa chọn nông trại hiện tại.'
       }</p>
+    </div>
+    <div class="text-end mt-4">
+      <button id="backToListBtn" class="btn btn-outline-primary">
+        ← Quay lại danh sách
+      </button>
     </div>
   `;
 }

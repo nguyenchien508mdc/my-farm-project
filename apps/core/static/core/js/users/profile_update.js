@@ -1,28 +1,15 @@
-export async function initProfileUpdate() {
-  const root = document.getElementById('root');
-  if (!root) return;
+// apps\core\static\core\js\users\profile_update.js
 
-  const token = localStorage.getItem('access_token');
-  if (!token) {
-    root.innerHTML = `<p>Bạn chưa đăng nhập. Vui lòng <a href="/login/">đăng nhập</a>.</p>`;
-    return;
-  }
+import { fetchWithAuthOrRedirect, clearToken} from '/static/js/auth.js';
+
+export async function initProfileUpdate() {
+  
+  if (!root) return;
 
   root.innerHTML = `<p>Đang tải thông tin...</p>`;
 
   try {
-    const response = await fetch('/api/core/me/', {
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        root.innerHTML = `<p>Phiên đăng nhập hết hạn hoặc không hợp lệ. Vui lòng <a href="/login/">đăng nhập lại</a>.</p>`;
-      } else {
-        root.innerHTML = `<p>Không thể tải thông tin người dùng. Vui lòng thử lại sau.</p>`;
-      }
-      return;
-    }
+    const response = await fetchWithAuthOrRedirect('/api/core/me/');
 
     const data = await response.json();
 
@@ -85,14 +72,19 @@ export async function initProfileUpdate() {
       };
 
       try {
-        const updateResponse = await fetch('/api/core/me/', {
+        const updateResponse = await fetchWithAuth('/api/core/me/', {
           method: 'PATCH',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedData),
         });
+
+        if (!updateResponse) {
+          message.textContent = 'Phiên đăng nhập hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại.';
+          message.className = 'text-danger';
+          clearToken();
+          window.location.href = '/login';
+          return;
+        }
 
         if (!updateResponse.ok) {
           const errorData = await updateResponse.json();
@@ -101,13 +93,13 @@ export async function initProfileUpdate() {
           return;
         }
 
-        const updatedUser = await updateResponse.json();
         message.textContent = 'Cập nhật thông tin thành công!';
         message.className = 'text-success';
 
       } catch (error) {
         message.textContent = 'Lỗi khi cập nhật thông tin. Vui lòng thử lại.';
         message.className = 'text-danger';
+        console.error(error);
       }
     });
 

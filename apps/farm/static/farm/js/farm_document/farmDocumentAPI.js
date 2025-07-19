@@ -1,79 +1,69 @@
 // apps/farm/static/js/farmDocumentAPI.js
-import { authHeaders } from '/static/js/auth.js';
+
+import { fetchWithAuth } from '/static/js/auth.js';
 
 // Lấy danh sách tất cả tài liệu của một farm theo farmId
-export function fetchFarmDocuments(farmId, onSuccess, onError) {
-    $.ajax({
-        url: `/api/farm/farms/${farmId}/documents/`,
-        type: 'GET',
-        dataType: 'json',
-        headers: authHeaders(),
-        success: onSuccess,
-        error: function (xhr, status, error) {
-            console.error('Lỗi khi lấy danh sách tài liệu:', error);
-            if (typeof onError === 'function') {
-                onError(xhr, status, error);
-            }
-        }
-    });
+export async function fetchFarmDocuments(farmId, onSuccess, onError) {
+  try {
+    const response = await fetchWithAuth(`/api/farm/farms/${farmId}/documents/`);
+    if (!response.ok) throw response;
+    const data = await response.json();
+    onSuccess(data);
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách tài liệu:', error);
+    if (typeof onError === 'function') onError(error);
+  }
 }
 
 // Lấy chi tiết tài liệu theo ID 
-export function fetchFarmDocumentDetail(documentId, onSuccess, onError) {
-    $.ajax({
-        url: `/api/farm/documents/${documentId}/`,
-        type: 'GET',
-        headers: authHeaders(),
-        success: onSuccess,
-        error: function (xhr, status, error) {
-            console.error('Lỗi khi lấy chi tiết tài liệu:', error);
-            if (typeof onError === 'function') {
-                onError(xhr, status, error);
-            }
-        }
-    });
+export async function fetchFarmDocumentDetail(documentId, onSuccess, onError) {
+  try {
+    const response = await fetchWithAuth(`/api/farm/documents/${documentId}/`);
+    if (!response.ok) throw response;
+    const data = await response.json();
+    onSuccess(data);
+  } catch (error) {
+    console.error('Lỗi khi lấy chi tiết tài liệu:', error);
+    if (typeof onError === 'function') onError(error);
+  }
 }
 
 // Tạo mới hoặc cập nhật tài liệu dùng farmId
-export function createOrUpdateFarmDocument(farmId, documentId, formData, onSuccess, onError) {
-    if (!documentId && !formData.has('farm')) {
-        formData.append('farm', farmId);
-    }
-    const url = documentId
-        ? `/api/farm/documents/${documentId}/`
-        : `/api/farm/documents/`;
+export async function createOrUpdateFarmDocument(farmId, documentId, formData, onSuccess, onError) {
+  if (!documentId && !formData.has('farm')) {
+    formData.append('farm', farmId);
+  }
+  const url = documentId
+    ? `/api/farm/documents/${documentId}/`
+    : `/api/farm/documents/`;
 
-    const method = documentId ? 'PATCH' : 'POST';
+  const method = documentId ? 'PATCH' : 'POST';
 
-    $.ajax({
-        url: url,
-        type: method,
-        headers: authHeaders(),
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: onSuccess,
-        error: function (xhr, status, error) {
-            console.error('Lỗi khi tạo/cập nhật tài liệu:', error);
-            if (typeof onError === 'function') {
-                onError(xhr, status, error);
-            }
-        }
+  try {
+    const response = await fetchWithAuth(url, {
+      method,
+      body: formData,
+      // Khi dùng FormData, không set Content-Type để browser tự xử lý
     });
+    if (!response.ok) throw response;
+    const data = await response.json();
+    onSuccess(data);
+  } catch (error) {
+    console.error('Lỗi khi tạo/cập nhật tài liệu:', error);
+    if (typeof onError === 'function') onError(error);
+  }
 }
 
-// Xóa tài liệu theo ID dùng farmId
-export function deleteFarmDocument( documentId, onSuccess, onError) {
-    $.ajax({
-        url: `/api/farm/documents/${documentId}/`,
-        type: 'DELETE',
-        headers: authHeaders(),
-        success: onSuccess,
-        error: function (xhr, status, error) {
-            console.error('Lỗi khi xóa tài liệu:', error);
-            if (typeof onError === 'function') {
-                onError(xhr, status, error);
-            }
-        }
+// Xóa tài liệu theo ID
+export async function deleteFarmDocument(documentId, onSuccess, onError) {
+  try {
+    const response = await fetchWithAuth(`/api/farm/documents/${documentId}/`, {
+      method: 'DELETE',
     });
+    if (!response.ok) throw response;
+    onSuccess();
+  } catch (error) {
+    console.error('Lỗi khi xóa tài liệu:', error);
+    if (typeof onError === 'function') onError(error);
+  }
 }

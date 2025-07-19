@@ -39,6 +39,9 @@ config/secrets/*
 *.gpg
 
 # === Environment & Virtualenv ===
+config/environment/.env
+config/environment/.env.dev
+config/environment/.env.production
 .env
 .env.*
 .envrc
@@ -74,6 +77,7 @@ coverage.xml
 *.py,cover
 
 # === Docker ===
+docker/
 *.pid
 Dockerfile*
 docker-compose*.yml

@@ -6,9 +6,7 @@ from django.db.models import TextChoices
 
 class Role(TextChoices):
     ADMIN = 'admin', _('Quản trị viên')
-    FARM_MANAGER = 'farm_manager', _('Quản lý nông trại')
-    FARMER = 'farmer', _('Nông dân')
-    SALES = 'sales', _('Nhân viên bán hàng')
+    STAFF = 'staff', _('Nhân viên')
     CUSTOMER = 'customer', _('Khách hàng')
 
 class User(AbstractUser):
@@ -27,12 +25,6 @@ class User(AbstractUser):
     class Meta:
         verbose_name = _("Người dùng")
         verbose_name_plural = _("Người dùng")
-
-    def has_farm_access(self, farm):
-        """Kiểm tra user có quyền truy cập farm không"""
-        if self.role in [Role.ADMIN, Role.FARM_MANAGER]:
-            return True
-        return self.farms.filter(id=farm.id).exists()
 
 class BaseModel(models.Model):
     created_at = models.DateTimeField(_("Ngày tạo"), auto_now_add=True)

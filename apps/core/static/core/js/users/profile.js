@@ -1,36 +1,17 @@
 // apps\core\static\core\js\users\profile.js
 
+import { fetchWithAuthOrRedirect } from '/static/js/auth.js';
+
 export async function initProfile() {
-  const root = document.getElementById('root');
-
+  
   if (!root) return;
-
-  const token = localStorage.getItem('access_token');
-  if (!token) {
-    root.innerHTML = `<p>Bạn chưa đăng nhập. Vui lòng <a href="/login/">đăng nhập</a>.</p>`;
-    return;
-  }
 
   root.innerHTML = `<p>Đang tải thông tin...</p>`;
 
   try {
-    const response = await fetch('/api/core/me/', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        root.innerHTML = `<p>Phiên đăng nhập hết hạn hoặc không hợp lệ. Vui lòng <a href="/login/">đăng nhập lại</a>.</p>`;
-      } else {
-        root.innerHTML = `<p>Không thể tải thông tin người dùng. Vui lòng thử lại sau.</p>`;
-      }
-      return;
-    }
-
+    const response = await fetchWithAuthOrRedirect('/api/core/me/');
     const data = await response.json();
-    console.log(data);
+
     root.innerHTML = `
     <div class="container my-4">
         <h2 class="mb-4 text-center">Thông tin tài khoản</h2>
@@ -57,7 +38,7 @@ export async function initProfile() {
 
             <h3 class="mt-4">Danh sách nông trại</h3>
             ${
-            data.farms && data.farms.length > 0
+              data.farms && data.farms.length > 0
                 ? `<div class="row row-cols-1 row-cols-md-3 g-3">
                     ${data.farms.map(farm => `
                     <div class="col">
@@ -77,8 +58,6 @@ export async function initProfile() {
         </div>
     </div>
     `;
-
-
 
   } catch (error) {
     console.error('Lỗi khi tải thông tin profile:', error);

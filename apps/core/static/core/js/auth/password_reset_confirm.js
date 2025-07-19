@@ -1,7 +1,6 @@
 // apps/core/static/js/auth/password_reset_confirm.js
 
-export function initPasswordResetConfirm() {
-  const root = document.getElementById('root');
+export async function initPasswordResetConfirm() {
   const pathParts = window.location.pathname.split('/').filter(Boolean);
 
   const uid = pathParts[1]; // reset/<uid>/<token>/
