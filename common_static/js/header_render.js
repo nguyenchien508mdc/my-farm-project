@@ -26,7 +26,7 @@ export function renderHeader(user) {
       <div class="collapse navbar-collapse justify-content-end" id="navbarMain">
         <ul class="navbar-nav">
           <li class="nav-item mx-1">
-            <a class="nav-link px-3 py-2 d-flex align-items-center" href="/">
+            <a class="nav-link px-3 py-2 d-flex align-items-center" href="/" data-link>
               <i class="fa fa-home me-1"></i>
               <span>Trang chủ</span>
             </a>
