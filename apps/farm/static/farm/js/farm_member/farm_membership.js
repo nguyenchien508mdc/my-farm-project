@@ -122,7 +122,6 @@ function loadMembershipList(farmId, currentUsername, currentUserRole, fetchedMem
     }
 
     farmId = Number(farmId);
-    
     const farmSlug = $container.data('farm-slug') || '';
 
     let loadingTimeout = setTimeout(() => {
@@ -134,32 +133,38 @@ function loadMembershipList(farmId, currentUsername, currentUserRole, fetchedMem
     fetchMemberships(
         farmId,
         (memberships) => {
-        const loadTime = performance.now() - loadStart;
-        clearTimeout(loadingTimeout);
+            clearTimeout(loadingTimeout);
+            const loadTime = performance.now() - loadStart;
+            const minDelay = 400;
+            const delay = loadTime < minDelay ? minDelay - loadTime : 0;
 
-        const minDelay = 400;
-        const delay = loadTime < minDelay ? minDelay - loadTime : 0;
+            setTimeout(() => {
+                fetchedMemberships.length = 0;
+                fetchedMemberships.push(...memberships);
 
-        setTimeout(() => {
-            fetchedMemberships.length = 0;
-            fetchedMemberships.push(...memberships);
+                if (memberships.length === 0) {
+                    $tbody.html('<tr><td colspan="6" class="text-center">Chưa có thành viên nào</td></tr>');
+                    return;
+                }
 
-            if (memberships.length === 0) {
-            $tbody.html('<tr><td colspan="6" class="text-center">Chưa có thành viên nào</td></tr>');
-            return;
-            }
+                $tbody.html('');
 
-            const rows = memberships
-            .map(m => renderMembershipRow(m, farmId, farmSlug, currentUserRole, currentUsername))
-            .join('');
-            $tbody.html(rows);
+                let index = 0;
+                function appendNext() {
+                    if (index >= memberships.length) return;
+                    const member = memberships[index];
+                    $tbody.append(renderMembershipRow(member, farmId, farmSlug, currentUserRole, currentUsername));
+                    index++;
+                    setTimeout(appendNext, 100);
+                }
+                appendNext();
 
-            $container.data('current-user-role', currentUserRole);
-        }, delay);
+                $container.data('current-user-role', currentUserRole);
+            }, delay);
         },
         () => {
-        clearTimeout(loadingTimeout);
-        showAlert('error', 'Lỗi khi tải danh sách thành viên');
+            clearTimeout(loadingTimeout);
+            showAlert('error', 'Lỗi khi tải danh sách thành viên');
         }
     );
 }

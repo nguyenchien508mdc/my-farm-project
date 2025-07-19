@@ -74,40 +74,56 @@ function renderFarmUI(root) {
     farmFormModal = new bootstrap.Modal(document.getElementById('farm-form-modal'));
 }
 
-function loadFarmList() {
-    fetchFarmList(function (data) {
-        let html = '';
-        if (!data || data.length === 0) {
-            html = `<tr><td colspan="7" class="text-center">Không có nông trại nào</td></tr>`;
-        } else {
-            data.forEach(farm => {
-                html += `
-                    <tr>
-                        <td>${farm.name}</td>
-                        <td>${farm.location || ''}</td>
-                        <td>${farm.area || ''}</td>
-                        <td>${farm.farm_type_display || farm.farm_type || 'plant'}</td>
-                        <td>${farm.members_count || 0}</td>
-                        <td>
-                            <span class="badge bg-${farm.is_active ? 'success' : 'secondary'}">
-                                ${farm.is_active ? 'Hoạt động' : 'Ngừng hoạt động'}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-primary edit-farm" data-id="${farm.id}"><i class="fas fa-edit"></i> Sửa</button>
-                            <button class="btn btn-sm btn-danger delete-farm" data-id="${farm.id}"><i class="fas fa-trash"></i> Xoá</button>
-                            <button class="btn btn-sm btn-info show-membership" data-farm-slug="${farm.slug}" data-farm-id="${farm.id}"><i class="fas fa-user"></i> Xem</button>
-                            <button class="btn btn-sm btn-warning show-documents" data-farm-slug="${farm.slug}" data-farm-id="${farm.id}"><i class="fas fa-file"></i> Xem</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-        $('#farm-list-container table tbody').html(html);
-    }, function () {
-        showAlert('error', 'Lỗi khi tải danh sách nông trại');
-    });
+function renderFarmRow(farm) {
+  return `
+    <tr>
+      <td>${farm.name}</td>
+      <td>${farm.location || ''}</td>
+      <td>${farm.area || ''}</td>
+      <td>${farm.farm_type_display || farm.farm_type || 'plant'}</td>
+      <td>${farm.members_count || 0}</td>
+      <td>
+        <span class="badge bg-${farm.is_active ? 'success' : 'secondary'}">
+          ${farm.is_active ? 'Hoạt động' : 'Ngừng hoạt động'}
+        </span>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-primary edit-farm" data-id="${farm.id}"><i class="fas fa-edit"></i> Sửa</button>
+        <button class="btn btn-sm btn-danger delete-farm" data-id="${farm.id}"><i class="fas fa-trash"></i> Xoá</button>
+        <button class="btn btn-sm btn-info show-membership" data-farm-slug="${farm.slug}" data-farm-id="${farm.id}"><i class="fas fa-user"></i> Xem</button>
+        <button class="btn btn-sm btn-warning show-documents" data-farm-slug="${farm.slug}" data-farm-id="${farm.id}"><i class="fas fa-file"></i> Xem</button>
+      </td>
+    </tr>
+  `;
 }
+
+function loadFarmList() {
+  const $tbody = $('#farm-list-container table tbody');
+  $tbody.html('<tr><td colspan="7" class="text-center text-muted">Đang tải...</td></tr>');
+
+  fetchFarmList(function (data) {
+    if (!data || data.length === 0) {
+      $tbody.html('<tr><td colspan="7" class="text-center">Không có nông trại nào</td></tr>');
+      return;
+    }
+
+    $tbody.html(''); 
+
+    let index = 0;
+    function appendNextFarm() {
+      if (index >= data.length) return;
+      const farm = data[index];
+      $tbody.append(renderFarmRow(farm));
+      index++;
+      setTimeout(appendNextFarm, 100); 
+    }
+    appendNextFarm();
+
+  }, function () {
+    showAlert('error', 'Lỗi khi tải danh sách nông trại');
+  });
+}
+
 
 function showFarmForm(id = null) {
     const $form = $('#farm-form');
