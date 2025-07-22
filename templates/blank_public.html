@@ -1,0 +1,13 @@
+{% extends "public_layout.html" %}
+{% load static %}
+
+{% block content %}
+  <!-- Vùng hiển thị alert -->
+  <div id="alert-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>
+
+  <!-- Vùng render nội dung JS -->
+  <div id="root"></div>
+{% endblock %}
+{% block extra_js %}
+    <script type="module" src="{% static 'js/router.js' %}"></script>
+{% endblock %}

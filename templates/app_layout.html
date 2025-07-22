@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'bootstrap-5.3.6-dist/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'fontawesome-free-6.7.2-web/css/all.min.css' %}">
+<link rel="stylesheet" href="{% static 'bootstrap-icons-1.13.1/bootstrap-icons.min.css' %}">
+<style>body{display:flex;flex-direction:column;min-height:100vh}.sticky-header{position:sticky;top:0;z-index:1020;box-shadow:0 2px 10px rgba(0,0,0,0.1)}main{padding-top:70px;flex:1}footer{margin-top:auto}.main-content{display:flex;flex-wrap:wrap;margin-bottom:20px}.navigation-sidebar{position:sticky;top:90px;height:calc(100vh - 110px);overflow-y:auto;flex:0 0 280px;padding-right:15px}.content-area{flex:1;min-width:0}@media(max-width:768px){.main-content{flex-direction:column}.navigation-sidebar{position:static;height:auto;flex:0 0 auto;margin-bottom:20px;padding-right:0}main{padding-top:60px}}</style>
+{% block extra_head %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+<header class="sticky-header bg-success text-white"><div id="header-root"></div></header>
+<main class="container">
+  <div id="alert-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1060; max-width: 360px;"></div>
+  <div class="main-content">
+    <aside class="navigation-sidebar"><div id="sidebar-root"></div></aside>
+    <div class="content-area ms-3">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</main>
+<footer class="bg-dark text-white"><div id="footer-root"></div></footer>
+<script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'bootstrap-5.3.6-dist/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/header.js' %}" type="module"></script>
+<script src="{% static 'js/sidebar.js' %}" type="module"></script>
+<script src="{% static 'js/footer.js' %}" type="module"></script>
+{% block extra_js %}{% endblock %}
+{% endblock %}

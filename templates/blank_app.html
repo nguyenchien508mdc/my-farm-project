@@ -1,0 +1,11 @@
+{% extends "app_layout.html" %}
+{% load static %}
+
+{% block content %}
+  <!-- Vùng render nội dung JS -->
+  <div id="root"></div>
+{% endblock %}
+
+{% block extra_js %}
+  <script type="module" src="{% static 'js/router.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'bootstrap-5.3.6-dist/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'fontawesome-free-6.7.2-web/css/all.min.css' %}">
+<link rel="stylesheet" href="{% static 'bootstrap-icons-1.13.1/bootstrap-icons.min.css' %}">
+{% block extra_head %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+    <div id="alert-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1060; max-width: 360px;"></div>
+    {% block content %}{% endblock %}
+
+<script src="{% static 'jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'bootstrap-5.3.6-dist/js/bootstrap.bundle.min.js' %}"></script>
+{% block extra_js %}{% endblock %}
+{% endblock %}
