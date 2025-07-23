@@ -1,6 +1,6 @@
 # apps/farm/mappers/membership_mapper.py
 from apps.farm.models import FarmMembership
-from apps.farm.schemas.membership import FarmMembershipOutSchema, FarmMembershipCreateUpdateSchema
+from apps.farm.schemas.membership_schema import FarmMembershipOutSchema, FarmMembershipCreateUpdateSchema
 from apps.farm.mappers.farm_mapper import farm_to_schema
 from apps.core.mappers.user_mapper import user_to_schema
 

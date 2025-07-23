@@ -1,4 +1,4 @@
-# apps/farm/schemas/farm.py
+# apps/farm/schemas/farm_schema.py
 from pydantic import BaseModel, validator, Field, constr
 from typing import Optional, Any
 from datetime import date, datetime

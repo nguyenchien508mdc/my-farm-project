@@ -1,3 +1,4 @@
+# config\settings\base.py
 import os
 from pathlib import Path
 from datetime import timedelta
@@ -72,13 +73,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-# Database mặc định (override trong dev/prod)
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
 
 AUTH_USER_MODEL = "core.User"
 

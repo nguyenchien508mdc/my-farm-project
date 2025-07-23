@@ -1,7 +1,7 @@
 # apps/farm/mappers/farm_mapper.py
 from typing import Optional
 from apps.farm.models import Farm
-from apps.farm.schemas.farm import FarmOutSchema, FarmCreateUpdateSchema
+from apps.farm.schemas.farm_schema import FarmOutSchema, FarmCreateUpdateSchema
 
 
 def farm_to_schema(farm: Farm) -> FarmOutSchema:

@@ -1,10 +1,10 @@
-# apps/farm/schemas/membership.py
+# apps/farm/schemas/membership_schema.py
 from typing import Optional
 from datetime import date, datetime
 from pydantic import BaseModel, constr
 
-from apps.core.schemas.user import UserSchema
-from apps.farm.schemas.farm import FarmOutSchema
+from apps.core.schemas.user_schema import UserSchema
+from apps.farm.schemas.farm_schema import FarmOutSchema
 
 class FarmMembershipSchema(BaseModel):
     role: constr(min_length=1, max_length=50)

@@ -7,9 +7,9 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Prefetch
 
 from apps.farm.models import Farm, FarmMembership, FarmDocument
-from apps.farm.schemas.farm import FarmCreateUpdateSchema, FarmOutSchema, FarmPartialUpdateSchema
-from apps.farm.schemas.membership import FarmMembershipCreateUpdateSchema, FarmMembershipOutSchema
-from apps.farm.schemas.document import FarmDocumentCreateUpdateSchema, FarmDocumentOutSchema
+from apps.farm.schemas.farm_schema import FarmCreateUpdateSchema, FarmOutSchema, FarmPartialUpdateSchema
+from apps.farm.schemas.membership_schema import FarmMembershipCreateUpdateSchema, FarmMembershipOutSchema
+from apps.farm.schemas.document_schema import FarmDocumentCreateUpdateSchema, FarmDocumentOutSchema
 
 from apps.farm.mappers.farm_mapper import farm_to_schema, create_farm_from_schema, update_farm_from_schema
 from apps.farm.mappers.membership_mapper import membership_to_schema, create_membership_from_schema, update_membership_from_schema

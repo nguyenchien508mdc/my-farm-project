@@ -3,8 +3,8 @@ import os
 from typing import Optional
 
 from apps.farm.models import FarmDocument, Farm
-from apps.farm.schemas.document import FarmDocumentOutSchema, FarmDocumentCreateUpdateSchema
-from apps.farm.schemas.farm import FarmOutSchema
+from apps.farm.schemas.document_schema import FarmDocumentOutSchema, FarmDocumentCreateUpdateSchema
+from apps.farm.schemas.farm_schema import FarmOutSchema
 
 
 def minimal_farm_schema(farm: Optional[Farm]) -> Optional[FarmOutSchema]:

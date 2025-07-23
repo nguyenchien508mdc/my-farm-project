@@ -14,7 +14,8 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
 
-from apps.core.schemas.user import UserSchema, UserCreateSchema, ChangePasswordSchema
+from apps.core.schemas.user_schema import UserSchema, UserCreateSchema, ChangePasswordSchema
+
 from apps.core.mappers.user_mapper import user_to_schema
 from apps.farm.mappers.farm_mapper import farm_to_schema
 

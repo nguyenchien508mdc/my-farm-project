@@ -1,8 +1,8 @@
-# apps/farm/schemas/document.py
+# apps/farm/schemas/document_schema.py
 from typing import Optional
 from datetime import date, datetime
 from pydantic import BaseModel, validator, constr
-from apps.farm.schemas.farm import FarmOutSchema 
+from apps.farm.schemas.farm_schema import FarmOutSchema 
 
 class FarmDocumentSchema(BaseModel):
     document_type: constr(min_length=1, max_length=50)

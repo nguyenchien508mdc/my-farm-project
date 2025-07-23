@@ -1,7 +1,7 @@
 #apps\farm\api\urls.py
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from . import views, api_views
+from . import api_views
 
 # Tạo router và đăng ký các ViewSet
 router = DefaultRouter()
