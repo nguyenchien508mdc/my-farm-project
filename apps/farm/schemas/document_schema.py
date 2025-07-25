@@ -1,7 +1,7 @@
 # apps/farm/schemas/document_schema.py
 from typing import Optional
 from datetime import date, datetime
-from pydantic import BaseModel, validator, constr
+from pydantic import BaseModel, validator, constr, ConfigDict
 from apps.farm.schemas.farm_schema import FarmOutSchema 
 
 class FarmDocumentSchema(BaseModel):
@@ -41,6 +41,5 @@ class FarmDocumentOutSchema(FarmDocumentSchema):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 

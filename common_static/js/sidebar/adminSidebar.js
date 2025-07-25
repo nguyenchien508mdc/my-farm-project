@@ -26,6 +26,19 @@ export function renderAdminSidebar() {
 
       <div class="dropdown mb-2">
         <a href="#" class="d-flex align-items-center justify-content-between text-decoration-none text-dark fw-semibold p-3 rounded border shadow-sm dropdown-toggle" 
+           id="dropdownFarm" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+          <span class="d-flex align-items-center">
+            <i class="fa-solid fa-tractor me-3 fs-5 text-success"></i>
+            <span>Quản lý Người dùng</span>
+          </span>
+        </a>
+        <ul class="dropdown-menu ps-4" aria-labelledby="dropdownUser" style="border:none;">
+          <li><a class="dropdown-item text-secondary" href="/users/" data-link>Thông tin người dùng</a></li>
+        </ul>
+      </div>
+
+      <div class="dropdown mb-2">
+        <a href="#" class="d-flex align-items-center justify-content-between text-decoration-none text-dark fw-semibold p-3 rounded border shadow-sm dropdown-toggle" 
            id="dropdownCrop" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
           <span class="d-flex align-items-center">
             <i class="fa-solid fa-seedling me-3 fs-5 text-success"></i>

@@ -1,5 +1,5 @@
 # apps/farm/schemas/farm_schema.py
-from pydantic import BaseModel, validator, Field, constr
+from pydantic import BaseModel, validator, Field, constr, ConfigDict
 from typing import Optional, Any
 from datetime import date, datetime
 
@@ -46,5 +46,4 @@ class FarmOutSchema(FarmCreateUpdateSchema):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

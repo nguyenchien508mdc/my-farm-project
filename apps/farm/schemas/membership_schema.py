@@ -1,7 +1,7 @@
 # apps/farm/schemas/membership_schema.py
 from typing import Optional
 from datetime import date, datetime
-from pydantic import BaseModel, constr
+from pydantic import BaseModel, constr, ConfigDict
 
 from apps.core.schemas.user_schema import UserSchema
 from apps.farm.schemas.farm_schema import FarmOutSchema
@@ -24,5 +24,4 @@ class FarmMembershipOutSchema(FarmMembershipSchema):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

@@ -5,11 +5,12 @@ import datetime
 import logging
 from typing import Optional, List, Union
 import asyncio
+import base64
+import os
 
 from apps.core.schemas.user_schema import UserCreateSchema, UserUpdateSchema
 from apps.core.repositories.user.base import AbstractUserRepository
 
-logger = logging.getLogger(__name__)
 
 def parse_date_or_none(value: Optional[str]) -> Optional[datetime.date]:
     try:
@@ -27,9 +28,9 @@ class SqliteUserRepository(AbstractUserRepository):
     EXTRA_COLUMNS = [
         'phone_number', 'address', 'date_of_birth',
         'date_joined', 'last_login', 'is_verified',
-        'role', 'profile_picture', 'role_display'
+        'role', 'role_display'
     ]
-    ALLOWED_UPDATE = ['email', 'first_name', 'last_name', 'phone_number', 'address', 'date_of_birth']
+    ALLOWED_UPDATE = ['email', 'first_name', 'last_name', 'phone_number', 'address', 'date_of_birth', 'username', 'role']
 
     def __init__(self, db_path="db.sqlite3"):
         self.db_path = db_path
@@ -76,7 +77,7 @@ class SqliteUserRepository(AbstractUserRepository):
                         cursor.execute(f"ALTER TABLE core_user ADD COLUMN {col} TEXT{default}")
                         conn.commit()
                     except sqlite3.OperationalError as e:
-                        logger.warning(f"Failed to add column {col}: {e}")
+                        print(f"Failed to add column {col}: {e}")
 
     async def create_user(self, data: UserCreateSchema) -> dict:
         loop = asyncio.get_running_loop()
@@ -86,15 +87,24 @@ class SqliteUserRepository(AbstractUserRepository):
         with self._connect() as conn:
             cursor = conn.cursor()
             now = datetime.datetime.utcnow().isoformat()
+            profile_picture = getattr(data, "profile_picture", None)
+            if profile_picture:
+                # Nếu profile_picture bắt đầu với /media/ thì bỏ đi
+                if profile_picture.startswith("/media/"):
+                    relative_path = profile_picture[len("/media/"):]
+                else:
+                    relative_path = profile_picture
+            else:
+                relative_path = None
             cursor.execute("""
                 INSERT INTO core_user
                 (username,email,password,first_name,last_name,
-                date_joined,is_verified,role,is_superuser,is_staff,is_active)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?)
+                date_joined,is_verified,role,is_superuser,is_staff,is_active, profile_picture)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
             """, (
                 data.username, data.email, data.password,
                 data.first_name or "", data.last_name or "",
-                now, "0", "user", "0", "0", "1",
+                now, "0", "user", "0", "0", "1",relative_path
             ))
             conn.commit()
             return self._get_by_id_sync(cursor.lastrowid)
@@ -109,7 +119,7 @@ class SqliteUserRepository(AbstractUserRepository):
             cursor.execute("SELECT * FROM core_user WHERE id = ?", (user_id,))
             row = cursor.fetchone()
             if not row:
-                logger.debug(f"User ID {user_id} not found")
+                print(f"User ID {user_id} not found")
                 return None
             return {
                 "id": row["id"],
@@ -125,7 +135,7 @@ class SqliteUserRepository(AbstractUserRepository):
                 "is_verified": row["is_verified"] == "1" if row["is_verified"] else False,
                 "role": row["role"] or "user",
                 "role_display": row["role_display"] or "",
-                "profile_picture": row["profile_picture"] or "",
+                "profile_picture": f"/media/{row['profile_picture']}" if row["profile_picture"] else "",
                 "farms": [],
                 "current_farm": None,
             }
@@ -156,20 +166,42 @@ class SqliteUserRepository(AbstractUserRepository):
         return await loop.run_in_executor(None, self._update_user_sync, user_id, data)
 
     def _update_user_sync(self, user_id: Union[int, str], data: UserUpdateSchema) -> dict:
+        user_id = int(user_id)
         ud = data.dict(exclude_unset=True)
         fields, values = [], []
-        for k in self.ALLOWED_UPDATE:
-            if k in ud:
-                val = ud[k]
-                if isinstance(val, (datetime.date, datetime.datetime)):
-                    val = val.isoformat()
-                fields.append(f"{k} = ?")
-                values.append(val)
-        if not fields:
-            raise ValueError("No valid fields to update")
-        values.append(user_id)
+        PROFILE_PICTURE_FOLDER = os.path.join("media", "profile_pictures")
+        os.makedirs(PROFILE_PICTURE_FOLDER, exist_ok=True)
+        profile_picture = ud.pop("profile_picture", None)
         with self._connect() as conn:
             cursor = conn.cursor()
+            cursor.execute("SELECT profile_picture FROM core_user WHERE id = ?", (user_id,))
+            row = cursor.fetchone()
+            if profile_picture:
+                if hasattr(profile_picture, "read") and hasattr(profile_picture, "name"):
+                    ext = os.path.splitext(profile_picture.name)[-1] or ".jpg"
+                    filename = f"{uuid.uuid4().hex}{ext}"
+                    filepath = os.path.join(PROFILE_PICTURE_FOLDER, filename)
+                    with open(filepath, "wb") as f:
+                        f.write(profile_picture.read())
+                    relative_path = f"profile_pictures/{filename}"
+                    fields.append("profile_picture = ?")
+                    values.append(relative_path)
+                elif isinstance(profile_picture, str):
+                    relative_path = profile_picture.lstrip("/media/")
+                    fields.append("profile_picture = ?")
+                    values.append(relative_path)
+                else:
+                    raise ValueError("profile_picture phải là file hoặc chuỗi đường dẫn hợp lệ")
+            for k in self.ALLOWED_UPDATE:
+                if k in ud:
+                    val = ud[k]
+                    if isinstance(val, (datetime.date, datetime.datetime)):
+                        val = val.isoformat()
+                    fields.append(f"{k} = ?")
+                    values.append(val)
+            if not fields:
+                raise ValueError("No valid fields to update")
+            values.append(user_id)
             cursor.execute(f"UPDATE core_user SET {', '.join(fields)} WHERE id = ?", values)
             conn.commit()
             return self._get_by_id_sync(user_id)
@@ -224,7 +256,7 @@ class SqliteUserRepository(AbstractUserRepository):
                 (user_id, token, expires_at)
             )
             conn.commit()
-            logger.info(f"Reset token for {email}: {token}")
+            print(f"Reset token for {email}: {token}")
             return True
 
     async def confirm_password_reset(self, token: str, new_password: str) -> bool:
@@ -266,8 +298,21 @@ class SqliteUserRepository(AbstractUserRepository):
     def _list_users_sync(self) -> List[dict]:
         with self._connect() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT id, username, email, first_name, last_name FROM core_user")
-            return [dict(row) for row in cursor.fetchall()]
+            cursor.execute("""
+                SELECT id, username, email, first_name, last_name,
+                    phone_number, address, date_of_birth, profile_picture,
+                    role, is_verified, date_joined, last_login, is_superuser
+                FROM core_user
+            """)
+            users = []
+            for row in cursor.fetchall():
+                user = dict(row)
+                if user["profile_picture"]:
+                    user["profile_picture"] = f"/media/{user['profile_picture']}" if user["profile_picture"] else ""
+                else:
+                    user["profile_picture"] = ""
+                users.append(user)
+            return users
 
     async def list_free_users(self, farm_id: Union[int, str]) -> List[dict]:
         loop = asyncio.get_running_loop()
@@ -275,14 +320,16 @@ class SqliteUserRepository(AbstractUserRepository):
 
     def _list_free_users_sync(self, farm_id: Union[int, str]) -> List[dict]:
         with self._connect() as conn:
+            conn.row_factory = sqlite3.Row  
             cursor = conn.cursor()
             cursor.execute("""
                 SELECT id, username, email, first_name, last_name
                 FROM core_user WHERE id NOT IN (
-                    SELECT user_id FROM farm_membership WHERE farm_id = ?
+                    SELECT user_id FROM farm_farmmembership WHERE farm_id = ?
                 )
             """, (farm_id,))
             return [dict(row) for row in cursor.fetchall()]
+
     
     async def save_password_reset_token(self, user_id: int, token: str) -> None:
         loop = asyncio.get_running_loop()

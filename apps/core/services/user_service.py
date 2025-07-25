@@ -48,7 +48,7 @@ class UserService:
         user = await user_repo.get_by_email(email)
         return user_to_schema(user) if user else None
 
-    async def get_user_by_id(self, user_id: int) -> Optional[UserSchema]:
+    async def get_by_id(self, user_id: int) -> Optional[UserSchema]:
         user = await user_repo.get_by_id(user_id)
         return user_to_schema(user) if user else None
 
@@ -96,4 +96,3 @@ class UserService:
         validate_password(new_password)
         hashed = make_password(new_password)
         return await user_repo.confirm_password_reset(token, hashed)
-

@@ -15,6 +15,7 @@ urlpatterns = [
     path('password-reset-confirm/<uidb64>/<token>/', TemplateView.as_view(template_name='blank_public.html'), name='password_reset_confirm'),
 
     # App layout (dành cho người đã đăng nhập)
+    path('users/', TemplateView.as_view(template_name='blank_app.html'), name='users'),
     path('profile/', TemplateView.as_view(template_name='blank_app.html'), name='profile'),
     path('profile-update/', TemplateView.as_view(template_name='blank_app.html'), name='profile_update'),
     path('password-change/', TemplateView.as_view(template_name='blank_app.html'), name='password_change'),

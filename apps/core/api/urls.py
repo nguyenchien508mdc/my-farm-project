@@ -10,7 +10,11 @@ urlpatterns = [
     path('password-change/', user_views.ChangePasswordAPIView.as_view(), name='api_password_change'),
     path('password-reset/', user_views.PasswordResetAPIView.as_view(), name='api_password_reset'),
     path('password-reset-confirm/', user_views.PasswordResetConfirmAPIView.as_view(), name='api_password_reset_confirm'),
+    
     path('users/', user_views.UserListAPIView.as_view(), name='user-list'),
+    path('users/<int:user_id>/', user_views.UpdateUserAPIView.as_view(), name='user-update'),
+    path('users/<int:user_id>/delete/', user_views.DeleteUserAPIView.as_view(), name='user-delete'),
+
     path('free-users/<int:farm_id>/', user_views.FreeUsersAPIView.as_view(), name='free-users'),
 
     path('token/', api_views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),

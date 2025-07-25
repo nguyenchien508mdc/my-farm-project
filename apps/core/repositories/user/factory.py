@@ -5,7 +5,6 @@ from apps.core.repositories.user.base import AbstractUserRepository
 
 def get_user_repository() -> AbstractUserRepository:
     db_type = getattr(settings, "DB_TYPE", "postgres").strip().lower()
-    print(db_type)
     if db_type == "mongo":
         from apps.core.repositories.user.mongo import MongoUserRepository
         return MongoUserRepository()
