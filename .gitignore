@@ -1,0 +1,112 @@
+# === Python ===
+*.py[cod]
+*.pyo
+__pycache__/
+*.so
+
+# === Django ===
+*.log
+*.pot
+*.pyc
+*.mo
+*.db
+*.sqlite3
+*.sqlite
+*.pkl
+*.cache
+db.sqlite3
+*.pyc
+*.pyo
+__pycache__/
+local_settings.py
+
+# === Django Migrations Cache ===
+*/migrations/__pycache__/
+*/migrations/*.pyc
+*/migrations/*.pyo
+*/migrations/*.log
+
+# === JWT & Security keys ===
+*.pem
+*.key
+*.crt
+*.jwt
+jwt.*
+jwt_secret.*
+secrets.*
+config/secrets/*
+*.enc
+*.gpg
+
+# === Environment & Virtualenv ===
+.env
+.env.*
+.envrc
+.venv/
+venv/
+ENV/
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# === Static & Media ===
+static/
+media/
+mediafiles/
+
+# === VSCode / IDEs ===
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# === Pytest & Coverage ===
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# === Docker ===
+docker/
+*.pid
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# === Git ===
+*.orig
+*.rej
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# === OS Specific ===
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# === Logs ===
+*.log
+logs/
+debug.log
+*.out
+
+# === Backup & Lock Files ===
+*~
+*.lock
+*.bak
+*.tmp
+*.old
+
+# === Secrets (custom naming) ===
+private.key
+public.key
+*.pem
